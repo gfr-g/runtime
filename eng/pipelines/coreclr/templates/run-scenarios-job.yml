@@ -98,14 +98,9 @@ jobs:
         - AdditionalHelixPostCommands: $(HelixPostCommandsLinux)
 
     - ${{ if ne(parameters.runtimeType, 'wasm') }}:
-      - dotnetPath: $(PayloadDirectory)/dotnet
-      - ExtraSetupArguments: --install-dir $(dotnetPath)
-    - ${{ if eq(parameters.runtimeType, 'wasm') }}:
-      - dotnetPath: $(PayloadDirectory)/dotnet-wasm/dotnet-workload
-      - ${{ if in(variables['Build.Reason'], 'PullRequest') }}:
-        - ExtraSetupArguments: --dotnet-path $(dotnetPath) --not-in-lab
-      - ${{ if notin(variables['Build.Reason'], 'PullRequest') }}:
-        - ExtraSetupArguments: --dotnet-path $(dotnetPath)
+      - ExtraSetupArguments: --install-dir $(PayloadDirectory)/dotnet
+    - ${{ if and(eq(parameters.runtimeType, 'wasm'), in(variables['Build.Reason'], 'PullRequest')) }}:
+      - ExtraSetupArguments: --not-in-lab
 
     workspace:
       clean: all
